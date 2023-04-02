@@ -16,13 +16,31 @@ class Board
     end
   end
 
+  def build_graph(piece, queue = [], result = [])
+    node = queue.shift
+    return result if queue.empty?
+    valid_moves(piece).each do |move|
+      node.children.push(move)
+    end
+    node.children.each { |child| queue.push(child) }
+    
+    puts "queue="
+    p queue
+
+    result.push(node)
+    position = node.children[0]
+    move_legal(piece, position[0], position[1])
+    build_graph(piece, node, queue)
+
+  end
+
   def set(piece, x, y)
     @board[x][y] = piece
   end
 
-  def remove(piece)
+  def remove(piece, string = ' ')
     position = pos(piece)
-    @board[position[0]][position[1]] = ' '
+    @board[position[0]][position[1]] = string
   end
 
   def pos(piece)
@@ -33,7 +51,7 @@ class Board
   end
 
   def move(piece, x, y)
-    remove(piece)
+    remove(piece, "x")
     set(piece, x, y)
     # print_board
     valid_moves(piece)
@@ -42,8 +60,9 @@ class Board
   def move_legal(piece,x, y)
     valids = valid_moves(piece)
     if valids.include?([x,y])
-      valids.each {|move| @board[move[0]][move[1]] = ' '}
+      valids.each {|move| @board[move[0]][move[1]] = ' ' unless @board[move[0]][move[1]] == "x" }
       move(piece,x,y)
+      print_board
     else
       puts "invalid move #{x},#{y}"
     end
@@ -57,10 +76,9 @@ class Board
       x = position[0] + move[0]
       y = position[1] + move[1]
       out_of_bounds = (x > 8 || x < 1) || (y > 8 || y < 1)
-      legal.push([x, y]) unless out_of_bounds
+      legal.push([x, y]) unless out_of_bounds || @board[x][y] == "x"
     end
     legal.each { |move| @board[move[0]][move[1]] = "\u2658" }
-    print_board
     legal
   end
 
@@ -94,6 +112,15 @@ class Knight
   end
 end
 
+class Node
+  attr_accessor :children
+
+  def initialize(piece)
+    @data = piece
+    @children = []
+  end
+end
+
 #-- TESTS --
 game_board = Board.new
 # game_board.board[1][1] = "x"
@@ -102,7 +129,8 @@ game_board = Board.new
 # game_board.print_board
 knight = Knight.new
 game_board.board[5][3] = knight
-p game_board.valid_moves(knight)
+game_board.print_board
+# p game_board.valid_moves(knight)
 # pp game_board.board[1..8][1..8]
 
 # p game_board.pos(knight)
@@ -111,7 +139,17 @@ p game_board.valid_moves(knight)
 
 # game_board.move(knight,5,5)
 # game_board.move(knight,4,7)
-game_board.move_legal(knight,6,1)
-game_board.move_legal(knight,8,1)
-game_board.move_legal(knight,8,2)
-game_board.move_legal(knight,6,3)
+
+# game_board.move_legal(knight,6,1)
+# game_board.move_legal(knight,8,1)
+# game_board.move_legal(knight,8,2)
+# game_board.move_legal(knight,6,3)
+
+#--ARRAY LOOP
+# valids = game_board.valid_moves(knight)
+# until valids.empty?
+#   sample = valids.sample
+#   game_board.move_legal(knight,sample[0],sample[1])
+#   valids = game_board.valid_moves(knight)
+# end
+game_board.build_graph(knight)
