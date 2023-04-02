@@ -6,7 +6,7 @@ class Board
     @board = Array.new(9) { Array.new(9) }
     @board.each_with_index do |row, row_index|
       row.each_with_index do |_col, col_index|
-        board[0][col_index] = string[col_index] if col_index.zero?
+        board[0][col_index] = string[col_index] if row_index.zero?
 
         board[row_index][0] = row_index if col_index.zero?
 
