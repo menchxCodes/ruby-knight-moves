@@ -38,6 +38,21 @@ class Board
     print_board
   end
 
+  def valid_moves(piece)
+    position = pos(piece)
+    valids = piece.valid_moves
+    legal = []
+    valids.each do |move|
+      x = position[0] + move[0]
+      y = position[1] + move[1]
+      out_of_bounds = (x > 8 || x < 1) || (y > 8 || y < 1)
+      legal.push([x, y]) unless out_of_bounds
+    end
+    legal.each { |move| @board[move[0]][move[1]] = "\u2658" }
+    print_board
+    legal
+  end
+
   def print_board
     puts "\n"
     @board.reverse.each_with_index do |row, _row_index|
@@ -60,13 +75,18 @@ class Knight
     @avatar = knight_utf.encode('utf-8')
     # @avatar = "K"
   end
+
+  def valid_moves
+    valids = []
+    [1,2,-1,-2].permutation(2).each {|perm| valids.push(perm) unless perm[0].abs == perm[1].abs}
+    valids
+  end
 end
 
 #-- TESTS --
 game_board = Board.new
 # game_board.board[1][1] = "x"
 # game_board.board[0][5] = 5
-
 
 # game_board.print_board
 knight = Knight.new
@@ -76,3 +96,8 @@ game_board.print_board
 p game_board.pos(knight)
 game_board.move(knight,2,3)
 game_board.move(knight,4,4)
+# p knight.valid_moves
+# p game_board.valid_moves(knight)
+
+game_board.move(knight,7,2)
+p game_board.valid_moves(knight)
