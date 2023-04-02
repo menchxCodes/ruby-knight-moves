@@ -7,13 +7,22 @@ class Board
     @board = Array.new(9) { Array.new(9) }
     @board.each_with_index do |row, row_index|
       row.each_with_index do |_col, col_index|
-        board[0][col_index] = string[col_index] if row_index.zero?
+        @board[0][col_index] = string[col_index] if row_index.zero?
 
-        board[row_index][0] = row_index if col_index.zero?
+        @board[row_index][0] = row_index if col_index.zero?
 
-        board[row_index][col_index] = ' ' unless row_index.zero? || col_index.zero?
+        @board[row_index][col_index] = ' ' unless row_index.zero? || col_index.zero?
       end
     end
+  end
+
+  def set(piece, x, y)
+    @board[x][y] = piece
+  end
+
+  def remove(piece)
+    position = pos(piece)
+    @board[position[0]][position[1]] = ' '
   end
 
   def pos(piece)
@@ -23,16 +32,18 @@ class Board
     end
   end
 
+  def move(piece, x, y)
+    remove(piece)
+    set(piece, x, y)
+    print_board
+  end
+
   def print_board
     puts "\n"
     @board.reverse.each_with_index do |row, _row_index|
       string = ''
       row.each_with_index do |col, _col_index|
-        if col.instance_of?(Knight)
-          string.concat(" #{col.avatar} |") if col.instance_of?(Knight)
-        else
-          string.concat(" #{col} |")
-        end
+        col.instance_of?(Knight) ? string.concat(" #{col.avatar} |") : string.concat(" #{col} |")
       end
       puts string
       puts '------------------------------------'
@@ -43,12 +54,14 @@ end
 
 class Knight
   attr_reader :avatar
+
   def initialize
     knight_utf = "\u265e"
-    @avatar = "#{knight_utf.encode('utf-8')}"
+    @avatar = knight_utf.encode('utf-8')
     # @avatar = "K"
   end
 end
+
 #-- TESTS --
 game_board = Board.new
 # game_board.board[1][1] = "x"
@@ -61,3 +74,5 @@ game_board.board[5][3] = knight
 game_board.print_board
 # pp game_board.board[1..8][1..8]
 p game_board.pos(knight)
+game_board.move(knight,2,3)
+game_board.move(knight,4,4)
