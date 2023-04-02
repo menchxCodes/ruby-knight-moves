@@ -35,7 +35,18 @@ class Board
   def move(piece, x, y)
     remove(piece)
     set(piece, x, y)
-    print_board
+    # print_board
+    valid_moves(piece)
+  end
+
+  def move_legal(piece,x, y)
+    valids = valid_moves(piece)
+    if valids.include?([x,y])
+      valids.each {|move| @board[move[0]][move[1]] = ' '}
+      move(piece,x,y)
+    else
+      puts "invalid move #{x},#{y}"
+    end
   end
 
   def valid_moves(piece)
@@ -91,13 +102,16 @@ game_board = Board.new
 # game_board.print_board
 knight = Knight.new
 game_board.board[5][3] = knight
-game_board.print_board
-# pp game_board.board[1..8][1..8]
-p game_board.pos(knight)
-game_board.move(knight,2,3)
-game_board.move(knight,4,4)
-# p knight.valid_moves
-# p game_board.valid_moves(knight)
-
-game_board.move(knight,7,2)
 p game_board.valid_moves(knight)
+# pp game_board.board[1..8][1..8]
+
+# p game_board.pos(knight)
+# game_board.move(knight,2,3)
+# game_board.move(knight,4,4)
+
+# game_board.move(knight,5,5)
+# game_board.move(knight,4,7)
+game_board.move_legal(knight,6,1)
+game_board.move_legal(knight,8,1)
+game_board.move_legal(knight,8,2)
+game_board.move_legal(knight,6,3)
