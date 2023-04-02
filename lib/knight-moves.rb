@@ -17,8 +17,6 @@ class Board
   end
 
   def pos(piece)
-    
-
     @board.each_with_index do |row, index|
       position = row.find_index(piece)
       return [index, position] unless position.nil?
