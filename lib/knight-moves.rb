@@ -16,21 +16,22 @@ class Board
     end
   end
 
-  def build_graph(piece, queue = [], result = [])
-    node = queue.shift
-    return result if queue.empty?
-    valid_moves(piece).each do |move|
+  def build_graph(piece, queue = [pos(piece)], result = [])
+    if queue.empty?
+      print_board
+      return result
+    end
+    node = Node.new(queue.shift)
+    set(piece,node.data[0],node.data[1]) unless pos(piece) == [node.data[0],node.data[1]]
+    result.push(node)
+    valids = valid_moves(piece)
+    valids.each do |move|
+      queue.push(move)
       node.children.push(move)
     end
-    node.children.each { |child| queue.push(child) }
-    
-    puts "queue="
-    p queue
+    remove(piece,"x")
 
-    result.push(node)
-    position = node.children[0]
-    move_legal(piece, position[0], position[1])
-    build_graph(piece, node, queue)
+    build_graph(piece, queue, result)
 
   end
 
@@ -63,8 +64,10 @@ class Board
       valids.each {|move| @board[move[0]][move[1]] = ' ' unless @board[move[0]][move[1]] == "x" }
       move(piece,x,y)
       print_board
+    elsif [x,y] == pos(piece)
+      puts "cannot move into itself"
     else
-      puts "invalid move #{x},#{y}"
+      # puts "invalid move #{x},#{y}"
     end
   end
 
@@ -113,13 +116,19 @@ class Knight
 end
 
 class Node
-  attr_accessor :children
+  attr_accessor :children, :data
 
-  def initialize(piece)
-    @data = piece
+  def initialize(move)
+    @data = move
     @children = []
   end
+
+  def print_node
+    puts "data #{self.data}"
+    p "children #{self.children}"
+  end
 end
+
 
 #-- TESTS --
 game_board = Board.new
@@ -152,4 +161,7 @@ game_board.print_board
 #   game_board.move_legal(knight,sample[0],sample[1])
 #   valids = game_board.valid_moves(knight)
 # end
-game_board.build_graph(knight)
+res = game_board.build_graph(knight)
+res.each do |result|
+  result.print_node
+end
