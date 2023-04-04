@@ -9,4 +9,4 @@ It was fun (and quite difficult) for me to work with a new data structure, I kep
 
 I'm sure things can be done a lot cleaner, but overall I'm happy with how I finally solved the assignment.
 
-Here is the REPL for the project.
+Here is the [REPL](https://replit.com/@menchx/ruby-knight-moves) for the project.
